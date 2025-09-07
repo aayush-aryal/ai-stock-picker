@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pydantic
+python-jose[cryptography]   # JWT
+sqlalchemy
+psycopg2-binary    
