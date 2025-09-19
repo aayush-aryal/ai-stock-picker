@@ -4,3 +4,11 @@ scikit-learn
 yfinance
 matplotlib
 jupyter
+pyarrow
+lxml
+seaborn 
+ta
+pandas-ta
+xgboost
+libomp
+

@@ -363,6 +363,8 @@ pyrightconfig.json
 **/*.backup.*
 **/*.back.*
 
+
+
 node_modules
 
 *.sublime*
@@ -370,5 +372,12 @@ node_modules
 psd
 thumb
 sketch
+
+#data
+
+*.parquet
+*.csv 
+
+
 
 # End of https://www.toptal.com/developers/gitignore/api/python,react,macos,linux,node
