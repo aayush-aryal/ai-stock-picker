@@ -1,4 +1,3 @@
-import yfinance as yf 
 import pandas as pd 
 from ..models.requests import StockDataRequest
 from ..models.stock_table import StockData
@@ -6,16 +5,12 @@ from ..utils.feature_engineer import (feature_engineer,
                                       target_engineer,
                                     get_sp500_index_data, 
                                     get_stock_market_data)
-import os 
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime,timezone,timedelta
 from dateutil.parser import parse
 from fastapi.encoders import jsonable_encoder
 import numpy as np
-
-BASE_DIR=os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-FILE_PATH = os.path.join(BASE_DIR, "ml", "data", "processed", "swing_trading_model_data.parquet")
 
 
 def stock_data_to_dict(df:pd.DataFrame)-> list[dict]:
@@ -91,7 +86,8 @@ def update_db(db: Session, end_date: str) -> str:
         df_new = df[df['Date'] > last_date.replace(tzinfo=None)]
         if df_new.empty:
             return "No new data to insert"
-        stock_objs = [StockData(**row) for row in df_new.to_dict("records")]  # type: ignore
+        columns_to_save = [col for col in df_new.columns if col in StockData.__table__.columns.keys()]
+        stock_objs = [StockData(**row) for row in df_new[columns_to_save].to_dict("records")]  # type: ignore
         db.bulk_save_objects(stock_objs)
         db.commit()
 
@@ -100,6 +96,3 @@ def update_db(db: Session, end_date: str) -> str:
     except Exception as e:
         db.rollback()
         return f"Error occurred while updating: {e}"
-
-
-
