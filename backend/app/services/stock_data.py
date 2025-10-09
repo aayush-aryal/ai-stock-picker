@@ -11,7 +11,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime,timezone,timedelta
 from dateutil.parser import parse
-
+from fastapi.encoders import jsonable_encoder
+import numpy as np
 
 BASE_DIR=os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 FILE_PATH = os.path.join(BASE_DIR, "ml", "data", "processed", "swing_trading_model_data.parquet")
@@ -25,13 +26,14 @@ def stock_data_to_dict(df:pd.DataFrame)-> list[dict]:
 
 
 def get_stock_data(db:Session,request:StockDataRequest)-> list[StockData]:
+    # assumption that db is updated for now
     df_ticker=db.query(StockData).filter(
         StockData.Ticker==request.ticker,
         StockData.Date>=request.start_date,
         StockData.Date<=request.end_date
     ).all()
-
-    return df_ticker
+    data = jsonable_encoder(df_ticker) 
+    return data
 
 
 
@@ -84,7 +86,7 @@ def update_db(db: Session, end_date: str) -> str:
 
         # Only drop rows where **features are NaN**, keep rows with NaN targets
         df = df.dropna(subset=feature_cols)
-
+        df=df.replace([np.nan,np.inf,-np.inf],None)
     # Keep only the rows that are **after last_date**
         df_new = df[df['Date'] > last_date.replace(tzinfo=None)]
         if df_new.empty:
