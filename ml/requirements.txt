@@ -11,4 +11,5 @@ ta
 pandas-ta
 xgboost
 libomp
+torch
 
