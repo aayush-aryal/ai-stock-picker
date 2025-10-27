@@ -13,3 +13,7 @@ python-dotenv
 joblib
 pydantic-settingss
 xgboost
+langchain
+langchain-text-splitters
+langchain-community
+langchain[google-genai]
