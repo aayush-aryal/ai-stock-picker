@@ -12,8 +12,6 @@ class Settings(BaseSettings):
 
     LOOKBACK_DAYS: int = 35
 
-    GOOGLE_API_KEY:str=""
-
     FEATURE_COLS:list[str]=[
                     'return_5d', 'rsi_14d', 'volatility_10d', 'volatility_20d', 
                    'sp500_return_5d', 'relative_strength_5d',
