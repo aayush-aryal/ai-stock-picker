@@ -1,5 +1,7 @@
 from defeatbeta_api.data.ticker import Ticker
 from ..utils.clean_np import clean_for_sqlalchemy
+from ..utils.rag_helpers import ask_agent, add_news_to_vector_store
+import json
 
 async def get_financial_income_statement(ticker_name:str):
     ticker=Ticker(ticker_name)
@@ -26,7 +28,15 @@ async def get_ticker_news(ticker_name:str):
     ticker=Ticker(ticker_name)
     news=ticker.news().get_news_list()
     news= news.to_dict('records')
-    news=clean_for_sqlalchemy(news)
+    print(len(news))
+    news=clean_for_sqlalchemy(news[:5])
+    #add news to vector store
+    add_news_to_vector_store(news)
     return news
+
+
+async def ask_rag_news(ticker_name:str,query:str,agent):
+    response=await ask_agent(agent,f"{query} STOCK: {ticker_name}")
+    return response
 
 

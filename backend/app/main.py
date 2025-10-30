@@ -2,11 +2,27 @@ from fastapi import FastAPI,Depends
 from .models.requests import StockDataRequest,PredictStockRank
 from .services.stock_data import get_stock_data,update_db
 from .services.model_llm import predict_rank,get_top_15_stocks_for_day
-from .services.ticker_info import get_financial_income_statement, get_earning_call_transcripts, get_ticker_news
+from .services.ticker_info import get_financial_income_statement, get_earning_call_transcripts, get_ticker_news, ask_rag_news
 from .db import get_db
 from sqlalchemy.orm import Session
+from contextlib import asynccontextmanager
+from .utils.rag_helpers import initialize_rag_system
+from fastapi import Depends,Request
 
-app=FastAPI()
+
+
+@asynccontextmanager
+async def lifespan(app:FastAPI):
+    # instantiate vector store and agent
+    agent=initialize_rag_system()
+    app.state.agent=agent
+    yield 
+
+def get_agent(request:Request):
+    return request.app.state.agent
+
+app=FastAPI(lifespan=lifespan)
+
 
 @app.get("/")
 async def root():
@@ -68,3 +84,10 @@ async def get_ticker_news_(ticker:str):
     }
 
 
+@app.post('/rag')
+async def ask_rag_stock_news(ticker:str,query:str, agent=Depends(get_agent)):
+    response=await ask_rag_news(ticker,query,agent)
+    return {
+        'ticker':ticker,
+        'llm_response':response
+    }
