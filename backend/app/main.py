@@ -1,13 +1,17 @@
 from fastapi import FastAPI,Depends
-from .models.requests import StockDataRequest,PredictStockRank
+from .models.requests import StockDataRequest,PredictStockRank, AskRagRequest, Context
 from .services.stock_data import get_stock_data,update_db
 from .services.model_llm import predict_rank,get_top_15_stocks_for_day
-from .services.ticker_info import get_financial_income_statement, get_earning_call_transcripts, get_ticker_news, ask_rag_news
+from .services.ticker_info import get_financial_income_statement, get_earning_call_transcripts, get_ticker_news, ask_rag
 from .db import get_db
 from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
 from .utils.rag_helpers import initialize_rag_system
 from fastapi import Depends,Request
+from fastapi.security import OAuth2PasswordBearer
+from typing import Annotated, Optional
+
+
 
 
 
@@ -22,7 +26,15 @@ def get_agent(request:Request):
     return request.app.state.agent
 
 app=FastAPI(lifespan=lifespan)
+oauth2_scheme=OAuth2PasswordBearer(tokenUrl="token")
 
+
+
+#authentication flow
+
+
+
+#endpoints
 
 @app.get("/")
 async def root():
@@ -56,7 +68,6 @@ async def get_top_15(date,db:Session=Depends(get_db)):
         "prediction":prediction
     }
     
-
 @app.get("/get-income-statement")
 async def get_income_satement(ticker:str):
     income_statement= await get_financial_income_statement(ticker)
@@ -85,9 +96,14 @@ async def get_ticker_news_(ticker:str):
 
 
 @app.post('/rag')
-async def ask_rag_stock_news(ticker:str,query:str, agent=Depends(get_agent)):
-    response=await ask_rag_news(ticker,query,agent)
+async def ask_rag_(request:AskRagRequest, agent=Depends(get_agent)):
+    context=Context(source=request.source, ticker=request.ticker,quarter=request.quarter, year=request.year)
+    response=await ask_rag(agent,context,request.query)
     return {
-        'ticker':ticker,
+        'ticker':request.ticker,
         'llm_response':response
     }
+
+@app.get("/items")
+async def read_items(token:Annotated[str,Depends(oauth2_scheme)]):
+    return{"token":token}

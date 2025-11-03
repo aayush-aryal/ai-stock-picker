@@ -1,5 +1,11 @@
 from pydantic import BaseModel 
+from enum import Enum
+from typing import Optional
+from dataclasses import dataclass
 
+class SourceEnum(str,Enum):
+    earnings_call="earnings_call"
+    news="news"
 class StockDataRequest(BaseModel):
     ticker:str
     start_date:str 
@@ -9,3 +15,16 @@ class PredictStockRank(BaseModel):
     ticker:str 
     date:str
 
+class AskRagRequest(BaseModel):
+    ticker:str
+    query:str
+    source:str
+    quarter:Optional[str]=None 
+    year:Optional[str]=None
+
+@dataclass
+class Context:
+    source:str
+    ticker:str
+    quarter:Optional[str]=None 
+    year:Optional[str]=None
