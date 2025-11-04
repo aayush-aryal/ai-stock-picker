@@ -41,3 +41,10 @@ async def ask_rag(agent,context,query:str):
     return response
 
 
+
+async def get_ticker_info(ticker_:str):
+    ticker=Ticker(ticker_)
+    info=ticker.info().to_dict('records')
+    info=clean_for_sqlalchemy(info)
+    print(info)
+    return info

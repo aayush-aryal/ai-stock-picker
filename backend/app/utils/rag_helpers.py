@@ -87,11 +87,11 @@ def load_financial_call_statement(statement,year,quarter,ticker):
         page_content=content.strip(),
         metadata={
             "ticker":ticker,
-            "year":year,
-            "quarter":quarter
+            "year":str(year),
+            "quarter":str(quarter)
         }
     )
-
+    print(doc.metadata)
     return doc
 
 # Construct a tool for retrieving context
@@ -141,7 +141,7 @@ def initialize_rag_system():
         "quote the section or part of the context used to answer the question"
     )
 
-    agent=create_agent(llm,tools=[],system_prompt=prompt, middleware=[prompt_with_context],context_schema=Context)
+    agent=create_agent(llm,tools=[],system_prompt=prompt, middleware=[prompt_with_context],context_schema=Context) # type: ignore
     return agent
 
 
@@ -149,16 +149,18 @@ def initialize_rag_system():
 def prompt_with_context(request:ModelRequest)->str:
     last_query=request.state["messages"][-1].text 
 
-    source=request.runtime.context.source
-    ticker=request.runtime.context.ticker
-    filter_dict={}
+    source=request.runtime.context.source # type: ignore
+    ticker=request.runtime.context.ticker # type: ignore
     if source=="news":
-        retrieved_docs=news_vector_store.similarity_search(last_query,k=3,filter={"ticker":ticker})
+        retrieved_docs=news_vector_store.similarity_search(last_query,k=3, filter={"ticker":ticker}) 
         print("Esto",retrieved_docs)
     elif source=="earnings_call":
-        year=request.runtime.context.year 
-        quarter=request.runtime.context.quarter
-        retrieved_docs=earning_call_statement_vector_store.similarity_search(last_query,k=5, filter={"ticker":ticker}) # type: ignore
+        year=request.runtime.context.year  # type: ignore
+        quarter=request.runtime.context.quarter # type: ignore
+        print(type(year),type(quarter))
+        retrieved_docs=earning_call_statement_vector_store.similarity_search(last_query,k=3,filter={"$and":[
+            {"ticker":ticker},{"year":year},{"quarter":quarter}
+        ]}) # type: ignore
         print(retrieved_docs)
     else:
         retrieved_docs=[]
