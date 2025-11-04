@@ -1,5 +1,5 @@
 import pandas as pd 
-from ..models.requests import StockDataRequest
+from ..models.DTOs.requests import StockDataRequest
 from ..models.stock_table import StockData
 from ..utils.feature_engineer import (feature_engineer,
                                       target_engineer,

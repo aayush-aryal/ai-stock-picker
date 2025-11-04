@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from ..services.ticker_info import get_financial_income_statement, get_earning_call_transcripts, get_ticker_news, ask_rag, get_ticker_info
 from fastapi import Depends, Request
-from ..models.requests import  AskRagRequest, Context
+from ..models.DTOs.requests import  AskRagRequest, Context
 
 
 

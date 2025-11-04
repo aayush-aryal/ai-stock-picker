@@ -1,7 +1,7 @@
 import os 
 import joblib
 from sqlalchemy.orm import Session
-from ..models.requests import PredictStockRank
+from ..models.DTOs.requests import PredictStockRank
 from ..models.stock_table import StockData
 import pandas as pd
 from ..core.config import settings

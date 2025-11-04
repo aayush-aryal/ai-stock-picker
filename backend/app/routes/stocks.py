@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends
-from ..models.requests import StockDataRequest,PredictStockRank
+from ..models.DTOs.requests import StockDataRequest,PredictStockRank
 from ..db import get_db
 from ..services.stock_data import get_stock_data,update_db
 from ..services.model_predictions import predict_rank,get_top_15_stocks_for_day

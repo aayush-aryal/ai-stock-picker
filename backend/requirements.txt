@@ -17,3 +17,7 @@ langchain
 langchain-text-splitters
 langchain-community
 langchain[google-genai]
+python-multipart
+pyjwt
+pwdlib
+pwdlib[argon2]
