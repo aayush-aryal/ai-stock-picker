@@ -18,7 +18,9 @@ class Settings(BaseSettings):
                    "stochastic_k","stochastic_d",'ema_8_21_cross','ema_21d',
                    'ema_8d','macd_histogram','obv_scaled','atr_14d','bollinger_percent_b','roc_21d',
                 ]
-    
+    SECRET_KEY:str=""
+    ALGORITHM:str=""
+    ACCESS_TOKEN_EXPIRE_MINUTES:int = 30
 
     class Config:
         env_file = ".env"

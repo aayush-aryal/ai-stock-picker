@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Date, Float, Integer
 from sqlalchemy.orm import declarative_base
+from ..db import Base
 
-Base = declarative_base()
 
 class StockData(Base):
     __tablename__ = "stock_data"
