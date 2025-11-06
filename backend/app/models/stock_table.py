@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Date, Float, Integer
+from sqlalchemy import Column, String, Date, Float, Integer, Boolean
 from sqlalchemy.orm import declarative_base
 from ..db import Base
 
@@ -46,4 +46,4 @@ class StockData(Base):
     # Targets
     target_5d = Column(Float)
     target_regression = Column(Float)
-    target_binary = Column(Integer)
+    target_binary = Column(Boolean)
