@@ -19,13 +19,17 @@ def list_slickcharts_sp500():
     symbols=[normalize_ticker(tick) for tick in symbols]
     return symbols
 
-def get_stock_market_data(start_date,end_date):
-    tickers= list_slickcharts_sp500()    
+def get_stock_market_data(start_date,end_date, tickers=None):
+    if not tickers:
+        tickers= list_slickcharts_sp500()    
     data = yf.download(tickers, start=start_date, end=end_date, 
                       group_by='ticker', auto_adjust=True)
     
     data=data.stack(level=0).reset_index() # type: ignore
     return data
+
+
+
 
 def calculate_rsi(prices,window=14):
     """Calculate RSI - momentum oscillator measuring speed of price movements"""
@@ -132,11 +136,6 @@ def target_engineer(df):
     df_copy["target_5d"]=df_copy.groupby("Ticker")["Close"].transform(
         lambda x:(x.shift(-5)/x-1)
     )
-
-    df_copy["target_regression"]=(df_copy["target_5d"].clip(
-        df_copy["target_5d"].quantile(0.01),
-        df_copy["target_5d"].quantile(0.99)
-    ))
 
     return df_copy
 

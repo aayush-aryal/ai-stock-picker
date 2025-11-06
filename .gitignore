@@ -381,4 +381,31 @@ sketch
 tensors/*
 !tensor/.gitkeep
 
+# Alembic cache / compiled files
+alembic/__pycache__/
+alembic/versions/__pycache__/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment files
+.env
+*.env
+
+# SQLite DB files (if local only)
+*.db
+*.sqlite3
+
+# IDE files
+.vscode/
+.idea/
+
+
+*.pkl 
+*.pt
+
+chroma_db/*
+
 # End of https://www.toptal.com/developers/gitignore/api/python,react,macos,linux,node
