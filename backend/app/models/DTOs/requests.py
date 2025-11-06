@@ -28,3 +28,16 @@ class Context:
     ticker:str
     quarter:Optional[str]=None 
     year:Optional[str]=None
+
+
+class AddStockRequest(BaseModel):
+    ticker:str 
+    date:str
+    amount:int 
+    stockname:str
+
+class RemoveStockRequest(BaseModel):
+    ticker:str 
+    date: str 
+    share:float 
+    

@@ -29,8 +29,6 @@ def get_password_hash(password):
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
-
-
 def authenticate_user(username:str,password:str,db:Session):
     user=db.query(Users).filter(Users.username==username).first()
     if not user:
@@ -75,7 +73,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db:Ses
     return UserDTO(
         username=user.username, # type: ignore
         email=user.email, # type: ignore
-        full_name=user.full_name # type: ignore
+        full_name=user.full_name, # type: ignore
+        total_capital=user.total_capital  # type: ignore
     )
 
 

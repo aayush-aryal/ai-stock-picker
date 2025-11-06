@@ -5,6 +5,7 @@ class UserDTO(BaseModel):
     username: str
     email: str | None = None
     full_name: str | None = None
+    total_capital:float| None=None
 
     class Config:
         orm_mode=True
