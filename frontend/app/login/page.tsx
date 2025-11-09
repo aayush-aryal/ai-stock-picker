@@ -2,12 +2,14 @@
 
 import { useState } from "react"
 import { Token } from "../definitions"
-import {redirect} from "next/navigation"
+import { useRouter } from "next/navigation"
+
 
 export default function LoginPage(){
     const [email,setEmail]=useState("")
     const [password, setPassword]=useState("")
     const [error,setError]=useState("")
+    const router=useRouter()
 
     async function handleSubmit(e:React.FormEvent){
         e.preventDefault()
@@ -26,10 +28,12 @@ export default function LoginPage(){
                 return; 
             }
             const data:Token=await res.json()
+            console.log(data)
             window.localStorage.setItem("token",data.access_token)
-            redirect("/dashboard")
+            router.push('/dashboard')
 
-        }catch{
+        }catch(error){
+            console.log(error)
             setError("Something went wrong when logging in")
         }
     }
