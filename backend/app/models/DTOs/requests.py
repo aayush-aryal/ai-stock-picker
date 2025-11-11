@@ -9,7 +9,15 @@ class SourceEnum(str,Enum):
 class StockDataRequest(BaseModel):
     ticker:str
     start_date:str 
-    end_date:str
+    end_date:Optional[str]=None
+
+class StockDataResponse(BaseModel):
+    ticker:str 
+    open:str 
+    close:str 
+    volume:str 
+    high:str 
+    low:str
 
 class PredictStockRank(BaseModel):
     ticker:str 

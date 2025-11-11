@@ -20,18 +20,36 @@ def stock_data_to_dict(df:pd.DataFrame)-> list[dict]:
     return df.to_dict("records")
 
 
-
-
-
-
-def get_stock_data(db:Session,request:StockDataRequest)-> list[StockData]:
+def get_stock_data(db:Session,request:StockDataRequest)-> list:
     # assumption that db is updated for now
-    df_ticker=db.query(StockData).filter(
+    end_date=request.end_date
+    if not request.end_date:
+        last_stock=db.query(StockData).filter(StockData.Ticker==request.ticker).order_by(StockData.Date.desc()).first()
+        end_date=last_stock.Date if last_stock else ""
+    print(end_date)
+    df_ticker=db.query( StockData.Date,
+        StockData.Open,
+        StockData.High,
+        StockData.Low,
+        StockData.Close,
+        StockData.Volume
+).filter(
         StockData.Ticker==request.ticker,
         StockData.Date>=request.start_date,
-        StockData.Date<=request.end_date
+        StockData.Date<=end_date
     ).all()
-    data = jsonable_encoder(df_ticker) 
+    data = [row._asdict() for row in df_ticker]
+    return data
+
+def get_day_stock_data(ticker:str,date:str,db:Session):
+    stock=db.query(        StockData.Open,
+        StockData.High,
+        StockData.Low,
+        StockData.Close,
+        StockData.Volume).filter(StockData.Ticker==ticker,
+                                     StockData.Date==date).first()
+    
+    data=stock._asdict()if stock else {}
     return data
 
 
@@ -55,7 +73,6 @@ def update_db(db: Session, end_date: str) -> str:
     try:
 
         last_date = db.query(func.max(StockData.Date)).scalar()
-        print("last date in db")
         if not last_date:
             return "Database empty or unsupported ticker"
         # last_date = last_date.replace(tzinfo=timezone.utc)
@@ -65,7 +82,6 @@ def update_db(db: Session, end_date: str) -> str:
             .all()
         )
         end_date_dt = parse(end_date).replace(tzinfo=timezone.utc)
-        print(end_date)
         fetch_end = min(end_date_dt, datetime.now(timezone.utc) - timedelta(days=1))
         last_date = datetime.combine(last_date, datetime.min.time()).replace(tzinfo=timezone.utc)
         if last_date >= fetch_end:

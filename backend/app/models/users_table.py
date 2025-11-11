@@ -2,6 +2,9 @@ from sqlalchemy import String,Column ,Float, Integer,Date
 from sqlalchemy import ForeignKey
 from ..db import Base 
 from sqlalchemy.orm import relationship
+from typing import Optional
+from enum import Enum
+from sqlalchemy import Enum as DbEnum
 
 class Users(Base):
     __tablename__ = "users"
@@ -15,7 +18,6 @@ class Users(Base):
 
 
 
-
 class UserStocks(Base):
 
     __tablename__="user_stocks"
@@ -24,6 +26,28 @@ class UserStocks(Base):
     date=Column(Date)
     stock=Column(String)
     shares=Column(Float)
+    avg_buy_price:Optional[float]=Column(Float) # type: ignore
 
     user=relationship("Users", back_populates="holdings")
+
+
+
+class Activity(Enum):
+    buy="buy"
+    sell="sell"
+
+
+
+class Transanctions(Base):
+    __tablename__="user_transanctions"
+    id=Column(Integer,primary_key=True, index=True)
+    username=Column(String, ForeignKey("users.username"))
+    date=Column(Date)
+    stock=Column(String)
+    shares=Column(Float)
+    activity = Column(DbEnum(Activity), nullable=False)
+
+
+
+
 

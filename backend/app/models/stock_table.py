@@ -47,3 +47,6 @@ class StockData(Base):
     target_5d = Column(Float)
     target_regression = Column(Float)
     target_binary = Column(Boolean)
+
+
+
