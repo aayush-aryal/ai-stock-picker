@@ -7,11 +7,8 @@ export default function DashBoardLayout({
     children:React.ReactNode
 }){
   return(
-    <html lang="en">
-      <body>
-        <NavBar/>
-        {children}
-      </body>
-    </html>
+        <div>
+            <main> {children}</main>
+        </div>
   )
 }
