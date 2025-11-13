@@ -1,35 +1,38 @@
 "use client";
-import { useEffect } from 'react';
+
 import { CartesianGrid, Line, LineChart, Tooltip, XAxis, YAxis  } from 'recharts';
-import { useState } from 'react';
-
-type Portfolio = {
-    date: string;
-    portfolio_value:number;
-};
 
 
+type ChartProps<T>={
+  data:T[],
+  xKey: keyof T;
+  yKey?: keyof T;
+  title?:string;
+  color?:string;
+  yLabel?:string;
+}
 
-export default function ChartComponent(){
-    const [portfolio, setPortfolio]=useState<Portfolio[]>()
-    useEffect(()=>{
-        async function loadData(){
-            const token=localStorage.getItem("token")
-            const res=await fetch("http://localhost:8000/user-owned-stocks/get-portfolio",
-                {
-                    headers:{Authorization:`Bearer ${token}`}
-                }
-            )
-            const data=await res.json()
-            setPortfolio(data)
-        }
-        loadData();
-    },[])
+export default function ChartComponent<T extends object>({
+  data,
+  xKey,
+  yKey,
+  color = "#4CAF50",
+  yLabel = "Value",
+
+}:ChartProps<T>){
+    if (!data || data.length==0) return <p>No data available</p>
+    const lineColor = (() => {
+  if (!data || data.length === 0 || !yKey) return color; // fallback
+  const first = data[0][yKey] as unknown as number;
+  const last = data[data.length - 1][yKey] as unknown as number;
+  return last >= first ? "#90EE90" : "red";
+})();
   return (
-    <LineChart
+    <div className='w-full flex justify-center'>
+          <LineChart
       style={{ width: '100%', aspectRatio: 1.618, maxWidth: 600 }}
       responsive
-      data={portfolio}
+      data={data}
       margin={{
         top: 20,
         right: 20,
@@ -38,10 +41,12 @@ export default function ChartComponent(){
       }}
     >
       <CartesianGrid stroke="#aaa" strokeDasharray="5 5" />
-      <Line type="monotone" dataKey="portfolio_value" stroke="#90EE90" strokeWidth={2} name="Portfolio Value" dot={false} />
-      <XAxis dataKey="date" tick={false} />
-      <YAxis width="auto" label={{ value: 'Portfolio Worth', position: 'insideLeft', angle: -90 }} />
+      <Line type="monotone" dataKey={yKey as string} stroke={lineColor} strokeWidth={2} name="Portfolio Value" dot={false} />
+      <XAxis dataKey={xKey as string} tick={false} />
+      <YAxis width="auto" label={{ value: yLabel as string, position: 'insideLeft', angle: -90 }} />
       <Tooltip labelFormatter={(label) => new Date(label).toLocaleDateString()} formatter={(value: number) => `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}  />
     </LineChart>
+    </div>
+
   );
 }

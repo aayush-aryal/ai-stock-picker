@@ -10,28 +10,46 @@ export default function Dashboard(){
           const router=useRouter();
           const [user,setUser]=useState<UserDTO| null>(null);
           const [loading, setLoading] = useState(true);
-          useEffect(() => {
-              const token = localStorage.getItem("token");
-              if (!token) {
-              router.push("/login");
-              return;
-              }
-      
-              fetch("http://localhost:8000/auth/users/me", {
-              headers: { Authorization: `Bearer ${token}` },
-              })
-              .then((res) => {
-                  if (!res.ok) {
-                  localStorage.removeItem("token");
-                  router.push("/login");
-                  throw new Error("Unauthorized");
-                  }
-                  return res.json();
-              })
-              .then(setUser)
-              .catch(console.error)
-              .finally(()=>setLoading(false));
-          }, [router]);
+          const [portfolio,setPortfolio]=useState()
+useEffect(() => {
+  const checkUserAndPortfolio = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      // Fetch logged-in user
+      const userRes = await fetch("http://localhost:8000/auth/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!userRes.ok) {
+        localStorage.removeItem("token");
+        router.push("/login");
+        throw new Error("Unauthorized");
+      }
+      const userData = await userRes.json();
+      setUser(userData);
+
+      // Fetch portfolio after user is fetched
+      const portfolioRes = await fetch(
+        "http://localhost:8000/user-owned-stocks/get-portfolio",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!portfolioRes.ok) throw new Error("Failed to fetch portfolio");
+      const portfolioData = await portfolioRes.json();
+      setPortfolio(portfolioData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  checkUserAndPortfolio();
+}, [router]);
+
     if (loading) {
       return (
         <div className="flex items-center justify-center h-screen">
@@ -57,7 +75,11 @@ export default function Dashboard(){
   <section className="flex-col items-center justify-center bg-white rounded-xl shadow p-4">
     
     <h1 className="font-bold text-3xl mb-10">{`${user?.username}'s Portfolio`}</h1>
-    <ChartComponent/>
+    <ChartComponent data={portfolio||[]} 
+      xKey="date" 
+      yKey="portfolio_value" 
+      yLabel="Value in dollars"
+      />
     <OwnedStocksTable/>
   </section>
 </div>
