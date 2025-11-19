@@ -30,7 +30,7 @@ async def get_ticker_news(ticker_name:str):
     news=ticker.news().get_news_list()
     news= news.to_dict('records')
     print(len(news))
-    news=clean_for_sqlalchemy(news[:5])
+    news=clean_for_sqlalchemy(news[:3])
     #add news to vector store
     add_news_to_vector_store(news,ticker_name)
     return news

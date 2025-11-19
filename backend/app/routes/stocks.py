@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi import Depends
 from ..models.DTOs.requests import StockDataRequest,PredictStockRank
 from ..db import get_db
-from ..services.stock_data import get_stock_data,update_db,get_day_stock_data
+from ..services.stock_data import get_stock_data,update_db,get_day_stock_data, get_prev_x_day_data
 from ..services.model_predictions import predict_rank,get_top_15_stocks_for_day
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -37,4 +37,10 @@ async def predict_stock(request:PredictStockRank, db:Session=Depends(get_db)):
 async def get_top_15(date:Optional[str]=None,db:Session=Depends(get_db)):
     prediction=get_top_15_stocks_for_day(db=db,date=date)
     return prediction
+
+@router.get("/get-prev-x-day-data")
+async def get_prev_day_data(ticker:str,days:int, db=Depends(get_db)):
+    data= get_prev_x_day_data(ticker,days,db)
+    return {"ticker":ticker, "data":data}
+
     

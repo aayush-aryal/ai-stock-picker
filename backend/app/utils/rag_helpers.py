@@ -167,6 +167,9 @@ def prompt_with_context(request:ModelRequest)->str:
     docs_content= "\n\n".join(doc.page_content for doc in retrieved_docs)
     system_message=(
         "You are a helpful assistant who gives information about a stock. Use the following context and ONLY THE CONTEXT in your response:"
+        "answer in 3 sentences or less with all accurate information with full context but in short"
+        "only answer what is asked ONLY based on provided context"
+        "quote the section or part of the context used to answer the question"
         f"\n\n{docs_content}"
     )
     return system_message

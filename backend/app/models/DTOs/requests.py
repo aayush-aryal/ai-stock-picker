@@ -40,12 +40,12 @@ class Context:
 
 class AddStockRequest(BaseModel):
     ticker:str 
-    date:str
+    date:Optional[str]=None
     amount:int 
     stockname:str
 
 class RemoveStockRequest(BaseModel):
     ticker:str 
-    date: str 
-    share:float 
+    date:Optional[str]=None
+    share:float
     

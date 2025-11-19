@@ -9,9 +9,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime,timezone,timedelta
 from dateutil.parser import parse
-from fastapi.encoders import jsonable_encoder
 import numpy as np
-from defeatbeta_api.data.ticker import Ticker
+
 
 
 def stock_data_to_dict(df:pd.DataFrame)-> list[dict]:
@@ -52,6 +51,13 @@ def get_day_stock_data(ticker:str,date:str,db:Session):
     data=stock._asdict()if stock else {}
     return data
 
+
+def get_prev_x_day_data(ticker:str, days:int, db:Session):
+    stocks=db.query(StockData.Date,
+                    StockData.Close).filter(StockData.Ticker==ticker).order_by(StockData.Date.desc()).limit(days)
+    
+    data= [row._asdict() for row in stocks]
+    return data
 
 
 def merge_and_process(df1,df2)-> pd.DataFrame:

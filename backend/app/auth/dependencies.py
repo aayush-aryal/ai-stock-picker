@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from ..models.users_table import Users
 from ..core.config import settings
+from fastapi import Request
 
 
 SECRET_KEY=settings.SECRET_KEY
@@ -50,10 +51,21 @@ def create_access_token(data:dict,experies_delta:timedelta|None=None):
         expire=datetime.now(timezone.utc)+ timedelta(minutes=15)
     to_encode.update({"exp":expire})
     encoded_jwt=jwt.encode(to_encode,SECRET_KEY,algorithm=ALGORITHM)
+
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db:Session=Depends(get_db)):
+def get_token_from_cookies(request:Request):
+    token=request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(
+            status_code=401,
+            detail="Not authenticated"
+        )
+    return token      
+
+
+async def get_current_user(token: Annotated[str, Depends(get_token_from_cookies)], db:Session=Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -104,3 +116,5 @@ async def register_user(register_user:RegisterUser, db:Session):
         full_name=new_user.full_name # type: ignore
     )
     return user_dto
+
+
