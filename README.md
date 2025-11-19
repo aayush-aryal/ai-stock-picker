@@ -1,6 +1,6 @@
 # Stockopedia
 
-A modern stock trading and prediction platform with AI-powered insights and portfolio management. Perfect to learn how to trade and research stocks with the ability to paper trade and see results!
+A modern stock trading and prediction platform with AI-powered insights and portfolio management. Perfect to learn how to swing trade and research stocks with the ability to paper trade and see results!
 
 ![Stockopedia Dashboard](/images/dashboard.png)
 
@@ -14,7 +14,7 @@ A modern stock trading and prediction platform with AI-powered insights and port
 
 ### AI-Powered Predictions
 
-- Top 5 stock predictions using machine learning
+- Top 5 stock predictions using machine learning (XGBoost and Bi-directional LSTM)
 - AI stock assistant for research and analysis of stock news
 
 ### Trading & Analysis
@@ -33,7 +33,7 @@ A modern stock trading and prediction platform with AI-powered insights and port
 
 ### Frontend
 
-- **Next.js **
+- **Next.js**
 - **TypeScript**
 - **Tailwind CSS**
 - **Recharts** - Data visualization
@@ -66,3 +66,7 @@ _Chat with AI about stocks and market insights_
 ### Login
 
 ![Login](images/login.png)
+
+#### Trade Stock
+
+![Trade](images/trade.png)
