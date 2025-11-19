@@ -62,3 +62,7 @@ A modern stock trading and prediction platform with AI-powered insights and port
 
 ![AI Assistant](images/stock.png)
 _Chat with AI about stocks and market insights_
+
+### Login
+
+![Login](images/login.png)

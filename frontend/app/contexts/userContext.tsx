@@ -10,7 +10,7 @@ import { UserDTO } from "../definitions";
 
 const UserContext = createContext<{
   user: UserDTO | null;
-  setUser: (u: UserDTO) => void;
+  setUser: (u: UserDTO | null) => void;
 }>({ user: null, setUser: () => {} });
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {

@@ -23,13 +23,13 @@ def user_buy_stock(request:AddStockRequest, db:Session, user):
                                                  UserStocks.stock==request.ticker).first()
     if not stock or not user:
         raise HTTPException(status.HTTP_400_BAD_REQUEST,"Could not add the stock")
-    number_of_shares=request.amount/ stock.Close
+    number_of_shares = Decimal(request.amount) / Decimal(stock.Close) # type: ignore
     db_user=db.query(Users).filter(Users.username==user.username).first()
     if user_owned_stock:
-       total_shares=number_of_shares+ float(user_owned_stock.shares) # type: ignore
+       total_shares=Decimal(number_of_shares)+ Decimal((user_owned_stock.shares)) # type: ignore
        user_owned_stock.date=request.date #type: ignore
-       user_owned_stock.avg_buy_price = ((Decimal(user_owned_stock.shares) * Decimal(user_owned_stock.avg_buy_price) +Decimal(number_of_shares) * Decimal(stock.Close))/ Decimal(total_shares) # type: ignore
-) # type: ignore
+       user_owned_stock.avg_buy_price = ((Decimal(user_owned_stock.shares) * Decimal(user_owned_stock.avg_buy_price) + Decimal(number_of_shares) * Decimal(stock.Close))/ Decimal(total_shares))  # type: ignore
+       user_owned_stock.shares = total_shares # type: ignore
 
     else:
         #add the row to the table?
@@ -50,7 +50,7 @@ def user_buy_stock(request:AddStockRequest, db:Session, user):
         date=request.date
     )
     db.add(new_transanction)
-    db_user.total_capital=db_user.total_capital-request.amount # type: ignore
+    db_user.total_capital -= Decimal(request.amount)# type: ignore
     db.commit()
     db.refresh(db_user)
     db.refresh(new_transanction)

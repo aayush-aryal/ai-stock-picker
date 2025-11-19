@@ -7,12 +7,23 @@ import { useUser } from "@/app/contexts/userContext";
 export default function ClientNav() {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   const handleSearch = () => {
     if (!query.trim()) return;
     router.push(`/stock/${query.toUpperCase()}`);
     setQuery("");
+  };
+
+  const handleLogout = async () => {
+    const res = await fetch("http://localhost:8000/auth/logout", {
+      credentials: "include",
+      method: "POST",
+    });
+    if (res.ok) {
+      setUser(null);
+      router.push("/login");
+    }
   };
 
   if (!user?.full_name) return null;
@@ -82,10 +93,7 @@ export default function ClientNav() {
             </div>
 
             <button
-              onClick={() => {
-                localStorage.removeItem("token");
-                router.push("/login");
-              }}
+              onClick={handleLogout}
               className="
                 px-3 py-2 bg-blue-600 text-white rounded-md
                 hover:bg-blue-700 transition whitespace-nowrap

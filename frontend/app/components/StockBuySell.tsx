@@ -68,12 +68,13 @@ export default function StockBuySell({ ticker }: StockBuySellProp) {
       });
 
       if (resp.ok) {
+        console.log("after buying");
         const data = await resp.json();
 
         if (user) {
           setUser({ ...user, total_capital: user.total_capital - value });
         }
-
+        console.log("data", data);
         setShares(Number(data.shares));
         setMessage("Stock bought successfully!");
         setValue("");
