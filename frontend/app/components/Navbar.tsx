@@ -1,66 +1,101 @@
 "use client";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useState } from "react";
-import { UserDTO } from "../definitions";
+import Link from "next/link";
+import { useUser } from "@/app/contexts/userContext";
 
-type NavBarProp = {
-  user: UserDTO | null;
-};
-
-export default function NavBar({ user }: NavBarProp) {
+export default function ClientNav() {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const { user } = useUser();
 
   const handleSearch = () => {
     if (!query.trim()) return;
-    router.push(`/stock/${query.toUpperCase()}`); // dynamic stock page
+    router.push(`/stock/${query.toUpperCase()}`);
     setQuery("");
   };
 
+  if (!user?.full_name) return null;
+
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        
-
-        <h2 className="font-semibold text-gray-900 text-lg">Stockopedia</h2>
-        <div className="flex items-center space-x-2 w-[300px]">
-          <input
-            type="text"
-            placeholder="Search a stock (e.g. AAPL)"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-slate-700"
-          />
-          <button
-            onClick={handleSearch}
-            className="bg-slate-700 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition"
-          >
-            Search
-          </button>
-        </div>
-
-        <div className="flex items-center space-x-6">
-          <Link href="/dashboard" className="text-gray-700 hover:text-slate-900">
-            Dashboard
-          </Link>
-          <p className="text-gray-700">
-            Buying Power:{" "}
-            <span className="text-gray-900 font-medium">
-              ${user?.total_capital.toFixed(2)}
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-blue-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          className="
+            flex flex-wrap items-center justify-between gap-4
+            py-3
+          "
+        >
+          {/* Brand */}
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-md bg-blue-600 flex items-center justify-center text-white font-bold shadow-sm">
+              S
+            </div>
+            <span className="text-blue-700 font-semibold text-lg whitespace-nowrap">
+              Stockopedia
             </span>
-          </p>
-          <button
-            className="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-md transition"
-            onClick={() => {
-              localStorage.removeItem("token");
-              router.push("/login");
-            }}
+          </Link>
+
+          {/* Search */}
+          <div className="flex-1 min-w-[220px] max-w-xl flex items-center gap-2">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="Search stock (AAPL, TSLA...)"
+              className="
+                w-full border border-blue-200 rounded-lg px-3 py-2
+                focus:outline-none focus:ring-2 focus:ring-blue-400
+              "
+            />
+            <button
+              onClick={handleSearch}
+              className="
+                px-4 py-2 bg-blue-600 text-white rounded-lg
+                hover:bg-blue-700 transition whitespace-nowrap
+              "
+            >
+              Search
+            </button>
+          </div>
+
+          {/* Right side actions */}
+          <div
+            className="
+              flex items-center gap-6
+              text-sm min-w-[220px] justify-end flex-wrap
+            "
           >
-            Logout
-          </button>
+            <Link
+              href="/dashboard"
+              className="text-gray-700 hover:text-blue-700 whitespace-nowrap"
+            >
+              Dashboard
+            </Link>
+
+            <div className="text-gray-700 whitespace-nowrap">
+              Buying Power:
+              <span className="ml-2 text-blue-700 font-semibold">
+                ${Number(user.total_capital).toFixed(2)}
+              </span>
+            </div>
+
+            <button
+              onClick={() => {
+                localStorage.removeItem("token");
+                router.push("/login");
+              }}
+              className="
+                px-3 py-2 bg-blue-600 text-white rounded-md
+                hover:bg-blue-700 transition whitespace-nowrap
+              "
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
-    </nav>
+    </header>
   );
 }

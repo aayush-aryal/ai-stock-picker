@@ -10,17 +10,19 @@ type ChartProps<T>={
   title?:string;
   color?:string;
   yLabel?:string;
+  dot?:boolean;
 }
 
 export default function ChartComponent<T extends object>({
   data,
   xKey,
   yKey,
+  dot,
   color = "#4CAF50",
   yLabel = "Value",
 
 }:ChartProps<T>){
-    if (!data || data.length==0) return <p>No data available</p>
+    if (!data || data.length==0) return;
     const lineColor = (() => {
   if (!data || data.length === 0 || !yKey) return color; // fallback
   const first = data[0][yKey] as unknown as number;
@@ -41,9 +43,9 @@ export default function ChartComponent<T extends object>({
       }}
     >
       <CartesianGrid stroke="#aaa" strokeDasharray="5 5" />
-      <Line type="monotone" dataKey={yKey as string} stroke={lineColor} strokeWidth={2} name="Portfolio Value" dot={false} />
+      <Line type="monotone" dataKey={yKey as string} stroke={lineColor} strokeWidth={2} name="Value" dot={dot?dot:false} />
       <XAxis dataKey={xKey as string} tick={false} />
-      <YAxis width="auto" label={{ value: yLabel as string, position: 'insideLeft', angle: -90 }} />
+      <YAxis domain={['auto', 'auto']} width="auto" label={{ value: yLabel as string, position: 'insideLeft', angle: -90 }} />
       <Tooltip labelFormatter={(label) => new Date(label).toLocaleDateString()} formatter={(value: number) => `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}  />
     </LineChart>
     </div>

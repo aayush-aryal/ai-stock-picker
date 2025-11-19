@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Token } from "../definitions"
 import { useRouter } from "next/navigation"
+import { useUser } from "../contexts/userContext"
 
 
 export default function LoginPage(){
@@ -10,6 +10,7 @@ export default function LoginPage(){
     const [password, setPassword]=useState("")
     const [error,setError]=useState("")
     const router=useRouter()
+    const {setUser}=useUser();
 
     async function handleSubmit(e:React.FormEvent){
         e.preventDefault()
@@ -21,19 +22,22 @@ export default function LoginPage(){
                 headers:{
                     "Content-Type":"application/x-www-form-urlencoded",
                 },
+                credentials:"include",
                 body:new URLSearchParams({"username":email,"password":password})
             });
             if (!res.ok){
                 setError("Invalid Credentials")
                 return; 
             }
-            const data:Token=await res.json()
-            console.log(data)
-            window.localStorage.setItem("token",data.access_token)
+            const user_res=await fetch("http://localhost:8000/auth/users/me", {"credentials":"include"})
+            console.log("after logging in", user_res)
+            if (user_res.ok){
+                const user= await user_res.json()
+                setUser(user);
+            }
             router.push('/dashboard')
 
         }catch(error){
-            console.log(error)
             setError("Something went wrong when logging in")
         }
     }

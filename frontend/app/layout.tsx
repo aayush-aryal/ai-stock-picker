@@ -1,14 +1,21 @@
-import "@/app/globals.css"
+"use client";
+import "@/app/globals.css";
+import NavBar from "./components/Navbar";
+import { UserProvider } from "./contexts/userContext";
+
 export default function RootLayout({
   children,
-}:{
-    children:React.ReactNode
-}){
-  return(
+}: {
+  children: React.ReactNode;
+}) {
+  return (
     <html lang="en">
       <body>
-        {children}
+        <UserProvider>
+          <NavBar />
+          {children}
+        </UserProvider>
       </body>
     </html>
-  )
+  );
 }
